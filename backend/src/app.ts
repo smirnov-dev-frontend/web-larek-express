@@ -1,6 +1,7 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { PORT, DB_ADDRESS, ORIGIN_ALLOW } from './config';
 import routes from './routes';
@@ -10,7 +11,8 @@ import { requestLogger, errorLogger } from './middlewares/logger';
 const app = express();
 
 app.use(requestLogger);
-app.use(cors({ origin: ORIGIN_ALLOW }));
+app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 

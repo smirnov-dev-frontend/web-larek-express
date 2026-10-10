@@ -64,3 +64,38 @@ export const validateOrderBody = celebrate({
       }),
   }),
 });
+
+const emailSchema = Joi.string().required().email()
+  .messages({
+    'any.required': 'Поле "email" должно быть заполнено',
+    'string.empty': 'Поле "email" должно быть заполнено',
+    'string.email': 'Поле "email" должно быть валидным email-адресом',
+  });
+
+export const validateRegisterBody = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    name: Joi.string().min(2).max(30)
+      .messages({
+        'string.min': 'Минимальная длина поля "name" - 2',
+        'string.max': 'Максимальная длина поля "name" - 30',
+      }),
+    email: emailSchema,
+    password: Joi.string().required().min(6)
+      .messages({
+        'any.required': 'Поле "password" должно быть заполнено',
+        'string.empty': 'Поле "password" должно быть заполнено',
+        'string.min': 'Минимальная длина поля "password" - 6',
+      }),
+  }),
+});
+
+export const validateLoginBody = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    email: emailSchema,
+    password: Joi.string().required()
+      .messages({
+        'any.required': 'Поле "password" должно быть заполнено',
+        'string.empty': 'Поле "password" должно быть заполнено',
+      }),
+  }),
+});
