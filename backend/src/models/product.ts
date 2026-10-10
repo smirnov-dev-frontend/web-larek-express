@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { removeFile } from '../utils/files';
 
 export interface IImage {
   fileName: string;
@@ -54,5 +55,11 @@ const productSchema = new Schema<IProduct>(
   },
   { versionKey: false },
 );
+
+productSchema.post('findOneAndDelete', async (product: IProduct | null) => {
+  if (product) {
+    await removeFile(product.image.fileName);
+  }
+});
 
 export default model<IProduct>('product', productSchema);

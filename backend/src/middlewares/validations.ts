@@ -1,29 +1,53 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 
+const productFields = {
+  title: Joi.string().min(2).max(30)
+    .messages({
+      'any.required': 'Поле "title" должно быть заполнено',
+      'string.empty': 'Поле "title" должно быть заполнено',
+      'string.min': 'Минимальная длина поля "title" - 2',
+      'string.max': 'Максимальная длина поля "title" - 30',
+    }),
+  image: Joi.object().keys({
+    fileName: Joi.string().required(),
+    originalName: Joi.string().required(),
+  })
+    .messages({
+      'any.required': 'Поле "image" должно быть заполнено',
+    }),
+  category: Joi.string()
+    .messages({
+      'any.required': 'Поле "category" должно быть заполнено',
+      'string.empty': 'Поле "category" должно быть заполнено',
+    }),
+  description: Joi.string().allow(''),
+  price: Joi.number().min(0).allow(null),
+};
+
+const productIdParams = Joi.object().keys({
+  productId: Joi.string().required().hex().length(24)
+    .messages({
+      'string.hex': 'Некорректный id товара',
+      'string.length': 'Некорректный id товара',
+    }),
+});
+
 export const validateProductBody = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    title: Joi.string().required().min(2).max(30)
-      .messages({
-        'any.required': 'Поле "title" должно быть заполнено',
-        'string.empty': 'Поле "title" должно быть заполнено',
-        'string.min': 'Минимальная длина поля "title" - 2',
-        'string.max': 'Максимальная длина поля "title" - 30',
-      }),
-    image: Joi.object().keys({
-      fileName: Joi.string().required(),
-      originalName: Joi.string().required(),
-    }).required()
-      .messages({
-        'any.required': 'Поле "image" должно быть заполнено',
-      }),
-    category: Joi.string().required()
-      .messages({
-        'any.required': 'Поле "category" должно быть заполнено',
-        'string.empty': 'Поле "category" должно быть заполнено',
-      }),
-    description: Joi.string().allow(''),
-    price: Joi.number().min(0).allow(null),
+    ...productFields,
+    title: productFields.title.required(),
+    image: productFields.image.required(),
+    category: productFields.category.required(),
   }),
+});
+
+export const validateProductUpdate = celebrate({
+  [Segments.PARAMS]: productIdParams,
+  [Segments.BODY]: Joi.object().keys(productFields),
+});
+
+export const validateProductId = celebrate({
+  [Segments.PARAMS]: productIdParams,
 });
 
 export const validateOrderBody = celebrate({

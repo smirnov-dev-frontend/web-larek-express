@@ -38,7 +38,7 @@ const createTokens = (_id: string) => ({
 const sendAuthResponse = (
   res: Response,
   user: Pick<IUser, 'email' | 'name'>,
-  tokens: { accessToken: string; refreshToken: string },
+  tokens: ReturnType<typeof createTokens>,
   statusCode = 200,
 ) => {
   res.cookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
@@ -117,10 +117,10 @@ export const refreshAccessToken = async (req: Request, res: Response, next: Next
       return next(new UnauthorizedError('Refresh-токен недействителен'));
     }
     const tokens = createTokens(user._id.toString());
-    await User.updateOne(
+    await User.findOneAndUpdate(
       { _id: user._id, 'tokens.token': refreshToken },
       { $set: { 'tokens.$.token': tokens.refreshToken } },
-      { runValidators: true },
+      { runValidators: true, new: true },
     );
     return sendAuthResponse(res, user, tokens);
   } catch (error) {
