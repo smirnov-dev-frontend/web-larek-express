@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
-import Product from '../models/product';
+import Product, { IProduct } from '../models/product';
 import BadRequestError from '../errors/bad-request-error';
 import ConflictError from '../errors/conflict-error';
 
@@ -17,7 +17,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
   try {
     const {
       title, image, category, description, price,
-    } = req.body;
+    }: IProduct = req.body;
     const product = await Product.create({
       title, image, category, description, price,
     });

@@ -20,11 +20,11 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
 
     let sum = 0;
     for (let i = 0; i < items.length; i += 1) {
-      if (!prices.has(items[i])) {
+      const price = prices.get(items[i]);
+      if (price === undefined) {
         return next(new BadRequestError(`Товар с id ${items[i]} не найден`));
       }
-      const price = prices.get(items[i]);
-      if (price === null || price === undefined) {
+      if (price === null) {
         return next(new BadRequestError(`Товар с id ${items[i]} не продаётся`));
       }
       sum += price;

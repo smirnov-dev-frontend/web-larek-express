@@ -25,4 +25,7 @@ const start = async () => {
   });
 };
 
-start();
+start().catch((error) => {
+  console.error('Не удалось подключиться к базе данных', error);
+  process.exit(1);
+});
